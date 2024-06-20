@@ -1,118 +1,140 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import * as React from 'react';
+import {StyleSheet, SafeAreaView} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createStackNavigator} from '@react-navigation/stack';
+import {HeaderBackButton} from '@react-navigation/elements';
+import DashboardScreen from './src/Components/Dashboard';
+import ProfileScreen from './src/Components/ProfileScreen';
+import MarketDataScreen from './src/Components/MarketDataScreen';
+import {AppProvider} from './src/Context/AppContext';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+type RootStackParamList = {
+  Dashboard: undefined;
+  Profile: undefined;
+  MarketData: undefined;
+};
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const DashboardStack = createStackNavigator<RootStackParamList>();
+const ProfileStack = createStackNavigator<RootStackParamList>();
+const MarketStack = createStackNavigator<RootStackParamList>();
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+function DashboardStackScreen() {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <DashboardStack.Navigator
+      screenOptions={{
+        headerTitleAlign: 'center',
+        headerTintColor: 'blue',
+      }}>
+      <DashboardStack.Screen name="Dashboard" component={DashboardScreen} />
+    </DashboardStack.Navigator>
   );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+function ProfileStackScreen() {
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <ProfileStack.Navigator
+      screenOptions={{
+        headerTitleAlign: 'center',
+        headerTintColor: 'blue',
+      }}>
+      <ProfileStack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={({navigation}) => ({
+          headerLeft: () => (
+            <HeaderBackButton onPress={() => navigation.goBack()} />
+          ),
+          headerShown: true,
+        })}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    </ProfileStack.Navigator>
+  );
+}
+
+function MarketStackScreen() {
+  return (
+    <MarketStack.Navigator
+      screenOptions={{
+        headerTitleAlign: 'center',
+        headerTintColor: 'blue',
+      }}>
+      <MarketStack.Screen
+        name="MarketData"
+        component={MarketDataScreen}
+        options={({navigation}) => ({
+          headerLeft: () => (
+            <HeaderBackButton onPress={() => navigation.goBack()} />
+          ),
+          headerShown: true,
+        })}
+      />
+    </MarketStack.Navigator>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+
+function MyTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarLabelStyle: {fontSize: 20, marginBottom: 10},
+      }}>
+      <Tab.Screen
+        name="DashboardStack"
+        component={DashboardStackScreen}
+        options={{tabBarIcon: () => null, tabBarLabel: 'Dashboard'}}
+      />
+      <Tab.Screen
+        name="ProfileStack"
+        component={ProfileStackScreen}
+        options={{tabBarIcon: () => null, tabBarLabel: 'Profile'}}
+      />
+      <Tab.Screen
+        name="MarketDataStack"
+        component={MarketStackScreen}
+        options={{tabBarIcon: () => null, tabBarLabel: 'Market data'}}
+      />
+    </Tab.Navigator>
+  );
+}
+
+// Main Stack Navigator
+const Stack = createStackNavigator();
+
+export default function App() {
+  return (
+    <SafeAreaView style={{flex: 1}}>
+      <AppProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Home"
+              component={MyTabs}
+              options={{headerShown: false}}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AppProvider>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  dashboardTitle: {
+    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 20,
+    marginBottom: 5,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 7,
   },
 });
-
-export default App;
